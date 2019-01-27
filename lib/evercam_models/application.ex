@@ -5,8 +5,8 @@ defmodule EvercamModels.Application do
     children = [
       # Starts a worker by calling: EvercamModels.Worker.start_link(arg)
       # {EvercamModels.Worker, arg}
-      {Evercam.Repo, []},
-      {Evercam.SnapshotRepo, []}
+      {Evercam.Repo, []}
+      # {Evercam.SnapshotRepo, []}
     ]
 
     opts = [strategy: :one_for_one, name: EvercamModels.Supervisor]
