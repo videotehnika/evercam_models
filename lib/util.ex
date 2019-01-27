@@ -1,4 +1,8 @@
 defmodule Util do
+  def hoho do
+    IO.inspect Application.get_env(:evercam_models, :repo)
+  end
+
   def deep_get(map, keys, default \\ nil), do: do_deep_get(map, keys, default)
 
   defp do_deep_get(nil, _, default), do: default
