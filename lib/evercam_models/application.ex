@@ -6,7 +6,7 @@ defmodule EvercamModels.Application do
       # Starts a worker by calling: EvercamModels.Worker.start_link(arg)
       # {EvercamModels.Worker, arg}
       {Evercam.Repo, []},
-      {Evercam.SnapshotRepo, []}
+      # {Evercam.SnapshotRepo, []}
     ]
 
     opts = [strategy: :one_for_one, name: EvercamModels.Supervisor]
