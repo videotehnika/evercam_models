@@ -2,7 +2,7 @@ use Mix.Config
 
 config :evercam_models, Evercam.Repo,
   types: Evercam.PostgresTypes,
-  url: Application.get_env(:evercam_models, :repo),
+  url: "postgres://localhost/evercam_dev",
   show_sensitive_data_on_connection_error: true,
   socket_options: [keepalive: true],
   timeout: 60_000,
