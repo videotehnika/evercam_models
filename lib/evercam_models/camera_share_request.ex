@@ -1,6 +1,6 @@
 defmodule CameraShareRequest do
   use Evercam.Schema
-  import CameraShare, only: [validate_rights: 1]
+  import CameraShare, only: [validate_rights: 1, html_sanitize_message: 1]
 
   @email_regex ~r/^(?!.*\.{2})[a-z0-9._-]+@[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/
 
@@ -164,5 +164,6 @@ defmodule CameraShareRequest do
     |> update_change(:email, &String.downcase/1)
     |> validate_rights
     |> update_change(:rights, &String.downcase/1)
+    |> html_sanitize_message
   end
 end
