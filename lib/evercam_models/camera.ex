@@ -75,11 +75,11 @@ defmodule Camera do
     |> preload(:user)
     |> Repo.all
     |> Enum.map(fn(cs) -> cs.user end)
-    |> Enum.into([camera.owner])
+    |> Enum.conact([camera.owner])
     |> Enum.each(fn(user) -> invalidate_user(user) end)
   end
 
-  def for(user, true), do: owned_by(user) |> Enum.into(shared_with(user))
+  def for(user, true), do: owned_by(user) |> Enum.conact(shared_with(user))
   def for(user, false), do: owned_by(user)
 
   defp owned_by(user) do
@@ -328,7 +328,7 @@ defmodule Camera do
         camera.access_rights
         |> Enum.filter(fn(ar) -> Util.deep_get(ar, [:access_token, :user_id], 0) == user.id && ar.status == 1 end)
         |> Enum.map(fn(ar) -> ar.right end)
-        |> Enum.into(["snapshot", "list"])
+        |> Enum.concat(["snapshot", "list"])
         |> Enum.uniq
         |> Enum.join(",")
     end
