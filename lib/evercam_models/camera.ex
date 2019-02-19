@@ -75,11 +75,11 @@ defmodule Camera do
     |> preload(:user)
     |> Repo.all
     |> Enum.map(fn(cs) -> cs.user end)
-    |> Enum.conact([camera.owner])
+    |> Enum.concat([camera.owner])
     |> Enum.each(fn(user) -> invalidate_user(user) end)
   end
 
-  def for(user, true), do: owned_by(user) |> Enum.conact(shared_with(user))
+  def for(user, true), do: owned_by(user) |> Enum.concat(shared_with(user))
   def for(user, false), do: owned_by(user)
 
   defp owned_by(user) do
