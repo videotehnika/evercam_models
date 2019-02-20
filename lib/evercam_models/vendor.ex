@@ -1,6 +1,9 @@
 defmodule Vendor do
   use Evercam.Schema
 
+  @required_fields [:exid, :name]
+  @optional_fields [:known_macs]
+
   schema "vendors" do
     has_many :vendor_models, VendorModel, foreign_key: :vendor_id
 
@@ -51,5 +54,11 @@ defmodule Vendor do
     mac_address = String.upcase(mac_address)
     query
     |> where([v], fragment("? @> ARRAY[?]", v.known_macs, ^mac_address))
+  end
+
+  def changeset(vendor, params \\ :invalid) do
+    vendor
+    |> cast(params, @required_fields ++ @optional_fields)
+    |> validate_required(@required_fields)
   end
 end
