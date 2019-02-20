@@ -29,7 +29,9 @@ defmodule EvercamModels.MixProject do
       {:poison, "~> 3.1"},
       {:calendar, "~> 0.17.4"},
       {:comeonin, "~> 3.0.2"},
-      {:uuid, "~> 1.1.7"}
+      {:uuid, "~> 1.1.7"},
+      {:con_cache, "~> 0.13.0"},
+      {:html_sanitize_ex, "~> 1.2.0"}
     ]
   end
 end

@@ -15,23 +15,6 @@ defmodule CameraActivity do
     field :name, :string
   end
 
-  defp do_log(true, user, camera, action, extra, done_at) do
-    access_token_id = AccessToken.active_token_id_for(user.id)
-    params = %{
-      camera_id: camera.id,
-      camera_exid: camera.exid,
-      access_token_id: access_token_id,
-      name: User.get_fullname(user),
-      action: action,
-      extra: extra,
-      done_at: done_at
-    }
-    %CameraActivity{}
-    |> changeset(params)
-    |> SnapshotRepo.insert
-  end
-  defp do_log(_mode, _, _, _, _, _), do: :noop
-
   def get_all(query) do
     query
     |> order_by([c], desc: c.done_at)

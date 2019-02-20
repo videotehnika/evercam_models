@@ -27,7 +27,7 @@ defmodule Camera do
     field :location, Geo.PostGIS.Geometry
     field :last_polled_at, :utc_datetime_usec, default: Calendar.DateTime.now_utc
     field :last_online_at, :utc_datetime_usec, default: Calendar.DateTime.now_utc
-    timestamps(inserted_at: :created_at, type: :utc_datetime, default: Calendar.DateTime.now_utc)
+    timestamps(inserted_at: :created_at, type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
   end
 
   def all do
@@ -56,17 +56,30 @@ defmodule Camera do
     |> Repo.all
   end
 
+  def invalidate_user(nil), do: :noop
+  def invalidate_user(%User{} = user) do
+    ConCache.delete(:cameras, "#{user.username}_true")
+    ConCache.delete(:cameras, "#{user.username}_false")
+  end
+
+  def invalidate_camera(nil), do: :noop
+  def invalidate_camera(%Camera{} = camera) do
+    ConCache.delete(:camera_full, camera.exid)
+    ConCache.delete(:camera, camera.exid)
+    invalidate_shares(camera)
+  end
+
   defp invalidate_shares(%Camera{} = camera) do
     CameraShare
     |> where(camera_id: ^camera.id)
     |> preload(:user)
     |> Repo.all
     |> Enum.map(fn(cs) -> cs.user end)
-    |> Enum.into([camera.owner])
-    # |> Enum.each(fn(user) -> invalidate_user(user) end)
+    |> Enum.concat([camera.owner])
+    |> Enum.each(fn(user) -> invalidate_user(user) end)
   end
 
-  def for(user, true), do: owned_by(user) |> Enum.into(shared_with(user))
+  def for(user, true), do: owned_by(user) |> Enum.concat(shared_with(user))
   def for(user, false), do: owned_by(user)
 
   defp owned_by(user) do
@@ -90,6 +103,20 @@ defmodule Camera do
     |> preload([vendor_model: :vendor])
     |> preload([access_rights: :access_token])
     |> Repo.all
+  end
+
+  def get(exid) do
+    ConCache.dirty_get_or_store(:camera, exid, fn() ->
+      Camera.by_exid(exid)
+    end)
+  end
+
+  def get_full(exid) do
+    exid = String.downcase(exid)
+
+    ConCache.dirty_get_or_store(:camera_full, exid, fn() ->
+      Camera.by_exid_with_associations(exid)
+    end)
   end
 
   def by_exid(exid) do
@@ -301,7 +328,7 @@ defmodule Camera do
         camera.access_rights
         |> Enum.filter(fn(ar) -> Util.deep_get(ar, [:access_token, :user_id], 0) == user.id && ar.status == 1 end)
         |> Enum.map(fn(ar) -> ar.right end)
-        |> Enum.into(["snapshot", "list"])
+        |> Enum.concat(["snapshot", "list"])
         |> Enum.uniq
         |> Enum.join(",")
     end

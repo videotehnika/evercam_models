@@ -7,6 +7,7 @@ defmodule EvercamModels.Application do
       # {EvercamModels.Worker, arg}
       {Evercam.Repo, []},
       {Evercam.SnapshotRepo, []}
+      # {ConCache,[ttl_check_interval: :timer.seconds(0.1), global_ttl: :timer.seconds(2.5), name: :cache]}
     ]
 
     opts = [strategy: :one_for_one, name: EvercamModels.Supervisor]
