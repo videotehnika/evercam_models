@@ -27,7 +27,11 @@ defmodule User do
     field :stripe_customer_id, :string
     field :confirmed_at, :utc_datetime_usec
     field :last_login_at, :utc_datetime_usec
+    field :current_sign_in_at, :utc_datetime_usec
     field :payment_method, :integer
+    field :sign_in_count, :integer
+    field :is_admin, :boolean
+    field :last_sign_in_ip, EctoFields.IPv4
     timestamps(inserted_at: :created_at, type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
   end
 
