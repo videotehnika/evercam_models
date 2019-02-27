@@ -278,6 +278,13 @@ defmodule Camera do
     end
   end
 
+  def get_auth_type(camera_full) do
+    case camera_full.vendor_model do
+      nil -> "basic"
+      vendor_model -> Map.get(vendor_model, :auth_type)
+    end
+  end
+
   def get_timezone(camera) do
     case camera.timezone do
       nil -> "Etc/UTC"

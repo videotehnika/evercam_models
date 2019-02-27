@@ -2,7 +2,7 @@ defmodule VendorModel do
   use Evercam.Schema
 
   @required_fields [:exid, :name, :jpg_url, :vendor_id]
-  @optional_fields [:username, :password, :h264_url, :mjpg_url, :mpeg4_url, :mobile_url, :lowres_url, :shape, :resolution, :official_url, :more_info, :audio_url, :poe, :wifi, :upnp, :ptz, :infrared, :varifocal, :sd_card, :audio_io, :discontinued, :onvif, :psia, :channel, :updated_at, :created_at]
+  @optional_fields [:username, :password, :h264_url, :auth_type, :mjpg_url, :mpeg4_url, :mobile_url, :lowres_url, :shape, :resolution, :official_url, :more_info, :audio_url, :poe, :wifi, :upnp, :ptz, :infrared, :varifocal, :sd_card, :audio_io, :discontinued, :onvif, :psia, :channel, :updated_at, :created_at]
 
   schema "vendor_models" do
     belongs_to :vendor, Vendor, foreign_key: :vendor_id
@@ -14,6 +14,7 @@ defmodule VendorModel do
     field :password, :string
     field :jpg_url, :string
     field :h264_url, :string
+    field :auth_type, :string
     field :mjpg_url, :string
     field :mpeg4_url, :string
     field :mobile_url, :string
@@ -49,6 +50,22 @@ defmodule VendorModel do
   def get_vendor_default_model(vendor) do
     VendorModel
     |> where(vendor_id: ^vendor.id)
+    |> where(name: "Default")
+    |> Repo.one
+  end
+
+  def get_auth_type(vendor_exid) do
+    case get_default_model_by_vendor_exid(vendor_exid) do
+      nil -> "basic"
+      vendor_model -> Map.get(vendor_model, :auth_type)
+    end
+  end
+
+  def get_default_model_by_vendor_exid(vendor) do
+    VendorModel
+    |> join(:inner, [u], v in Vendor)
+    |> where([vm, v], v.id == vm.vendor_id)
+    |> where([vm, v], v.exid == ^vendor)
     |> where(name: "Default")
     |> Repo.one
   end
