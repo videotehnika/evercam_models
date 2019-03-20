@@ -140,71 +140,6 @@ CREATE SEQUENCE public.add_ons_id_seq
 
 
 --
--- Name: add_ons; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.add_ons (
-    id integer DEFAULT nextval('public.add_ons_id_seq'::regclass) NOT NULL,
-    user_id integer NOT NULL,
-    add_ons_name text NOT NULL,
-    period text NOT NULL,
-    add_ons_start_date timestamp with time zone NOT NULL,
-    add_ons_end_date timestamp with time zone NOT NULL,
-    status boolean NOT NULL,
-    price double precision NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    exid text NOT NULL,
-    invoice_item_id text NOT NULL
-);
-
-
---
--- Name: apps; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.apps (
-    id integer NOT NULL,
-    camera_id integer NOT NULL,
-    local_recording boolean DEFAULT false NOT NULL,
-    cloud_recording boolean DEFAULT false NOT NULL,
-    motion_detection boolean DEFAULT false NOT NULL,
-    watermark boolean DEFAULT false NOT NULL
-);
-
-
---
--- Name: apps_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.apps_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: apps_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.apps_id_seq OWNED BY public.apps.id;
-
-
---
--- Name: ar_internal_metadata; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.ar_internal_metadata (
-    key character varying NOT NULL,
-    value character varying,
-    created_at timestamp without time zone NOT NULL,
-    updated_at timestamp without time zone NOT NULL
-);
-
-
---
 -- Name: archives; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -248,39 +183,6 @@ ALTER SEQUENCE public.archive_id_seq OWNED BY public.archives.id;
 
 
 --
--- Name: billing; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.billing (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    timelapse integer,
-    snapmail integer,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL
-);
-
-
---
--- Name: billing_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.billing_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: billing_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.billing_id_seq OWNED BY public.billing.id;
-
-
---
 -- Name: camera_activities; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -314,38 +216,6 @@ CREATE SEQUENCE public.camera_activities_id_seq
 --
 
 ALTER SEQUENCE public.camera_activities_id_seq OWNED BY public.camera_activities.id;
-
-
---
--- Name: camera_endpoints; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.camera_endpoints (
-    id integer NOT NULL,
-    camera_id integer,
-    scheme text NOT NULL,
-    host text NOT NULL,
-    port integer NOT NULL
-);
-
-
---
--- Name: camera_endpoints_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.camera_endpoints_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: camera_endpoints_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.camera_endpoints_id_seq OWNED BY public.camera_endpoints.id;
 
 
 --
@@ -461,34 +331,6 @@ CREATE TABLE public.cameras (
 
 
 --
--- Name: sq_clients; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.sq_clients
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: clients; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.clients (
-    id integer DEFAULT nextval('public.sq_clients'::regclass) NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    api_id text NOT NULL,
-    callback_uris text[],
-    api_key text,
-    name text,
-    settings text
-);
-
-
---
 -- Name: cloud_recordings; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -580,49 +422,6 @@ CREATE TABLE public.countries (
 
 
 --
--- Name: licences; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.licences (
-    id integer NOT NULL,
-    user_id integer NOT NULL,
-    description text NOT NULL,
-    total_cameras integer NOT NULL,
-    storage integer NOT NULL,
-    amount double precision,
-    paid boolean DEFAULT false NOT NULL,
-    vat boolean DEFAULT false NOT NULL,
-    vat_number integer,
-    start_date timestamp with time zone NOT NULL,
-    end_date timestamp with time zone NOT NULL,
-    created_at timestamp with time zone NOT NULL,
-    cancel_licence boolean DEFAULT false NOT NULL,
-    subscription_id text,
-    auto_renew boolean DEFAULT false NOT NULL,
-    auto_renew_at timestamp with time zone
-);
-
-
---
--- Name: licences_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.licences_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: licences_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.licences_id_seq OWNED BY public.licences.id;
-
-
---
 -- Name: meta_datas; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -655,50 +454,6 @@ CREATE SEQUENCE public.meta_datas_id_seq
 --
 
 ALTER SEQUENCE public.meta_datas_id_seq OWNED BY public.meta_datas.id;
-
-
---
--- Name: motion_detections; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.motion_detections (
-    id integer NOT NULL,
-    camera_id integer NOT NULL,
-    frequency integer,
-    "minPosition" integer,
-    step integer,
-    min integer,
-    threshold integer,
-    schedule json,
-    enabled boolean DEFAULT false,
-    alert_email boolean DEFAULT false,
-    alert_interval_min integer,
-    sensitivity integer,
-    x1 integer,
-    y1 integer,
-    x2 integer,
-    y2 integer,
-    emails text[]
-);
-
-
---
--- Name: motion_detections_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.motion_detections_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: motion_detections_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.motion_detections_id_seq OWNED BY public.motion_detections.id;
 
 
 --
@@ -863,6 +618,18 @@ ALTER SEQUENCE public.snapshot_extractors_id_seq OWNED BY public.snapshot_extrac
 --
 
 CREATE SEQUENCE public.sq_access_tokens_streams_rights
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: sq_clients; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.sq_clients
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -1043,35 +810,6 @@ CREATE TABLE public.users (
 
 
 --
--- Name: users_old; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.users_old (
-    id integer NOT NULL,
-    created_at timestamp with time zone DEFAULT now() NOT NULL,
-    updated_at timestamp with time zone DEFAULT now() NOT NULL,
-    firstname text NOT NULL,
-    lastname text NOT NULL,
-    username text NOT NULL,
-    password text NOT NULL,
-    country_id integer,
-    confirmed_at timestamp with time zone,
-    email text NOT NULL,
-    reset_token text,
-    token_expires_at timestamp without time zone,
-    api_id text,
-    api_key text,
-    is_admin boolean DEFAULT false NOT NULL,
-    stripe_customer_id text,
-    billing_id text,
-    last_login_at timestamp with time zone,
-    vat_number text,
-    payment_method integer DEFAULT 0,
-    insight_id text
-);
-
-
---
 -- Name: vendor_models; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -1126,51 +864,10 @@ CREATE TABLE public.vendors (
 
 
 --
--- Name: webhooks; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.webhooks (
-    id integer NOT NULL,
-    camera_id integer NOT NULL,
-    user_id integer NOT NULL,
-    url text NOT NULL,
-    exid text,
-    created_at timestamp with time zone NOT NULL,
-    updated_at timestamp with time zone NOT NULL
-);
-
-
---
--- Name: webhooks_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.webhooks_id_seq
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: webhooks_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.webhooks_id_seq OWNED BY public.webhooks.id;
-
-
---
 -- Name: access_rights id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.access_rights ALTER COLUMN id SET DEFAULT nextval('public.access_rights_id_seq'::regclass);
-
-
---
--- Name: apps id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.apps ALTER COLUMN id SET DEFAULT nextval('public.apps_id_seq'::regclass);
 
 
 --
@@ -1181,24 +878,10 @@ ALTER TABLE ONLY public.archives ALTER COLUMN id SET DEFAULT nextval('public.arc
 
 
 --
--- Name: billing id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.billing ALTER COLUMN id SET DEFAULT nextval('public.billing_id_seq'::regclass);
-
-
---
 -- Name: camera_activities id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.camera_activities ALTER COLUMN id SET DEFAULT nextval('public.camera_activities_id_seq'::regclass);
-
-
---
--- Name: camera_endpoints id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.camera_endpoints ALTER COLUMN id SET DEFAULT nextval('public.camera_endpoints_id_seq'::regclass);
 
 
 --
@@ -1223,24 +906,10 @@ ALTER TABLE ONLY public.cloud_recordings ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
--- Name: licences id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.licences ALTER COLUMN id SET DEFAULT nextval('public.licences_id_seq'::regclass);
-
-
---
 -- Name: meta_datas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.meta_datas ALTER COLUMN id SET DEFAULT nextval('public.meta_datas_id_seq'::regclass);
-
-
---
--- Name: motion_detections id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.motion_detections ALTER COLUMN id SET DEFAULT nextval('public.motion_detections_id_seq'::regclass);
 
 
 --
@@ -1286,13 +955,6 @@ ALTER TABLE ONLY public.timelapses ALTER COLUMN id SET DEFAULT nextval('public.t
 
 
 --
--- Name: webhooks id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.webhooks ALTER COLUMN id SET DEFAULT nextval('public.webhooks_id_seq'::regclass);
-
-
---
 -- Name: access_rights access_rights_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1301,51 +963,11 @@ ALTER TABLE ONLY public.access_rights
 
 
 --
--- Name: add_ons add_ons_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.add_ons
-    ADD CONSTRAINT add_ons_pkey PRIMARY KEY (id);
-
-
---
--- Name: apps apps_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.apps
-    ADD CONSTRAINT apps_pkey PRIMARY KEY (id);
-
-
---
--- Name: ar_internal_metadata ar_internal_metadata_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.ar_internal_metadata
-    ADD CONSTRAINT ar_internal_metadata_pkey PRIMARY KEY (key);
-
-
---
 -- Name: archives archives_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.archives
     ADD CONSTRAINT archives_pkey PRIMARY KEY (id);
-
-
---
--- Name: billing billing_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.billing
-    ADD CONSTRAINT billing_pkey PRIMARY KEY (id);
-
-
---
--- Name: camera_endpoints camera_endpoints_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.camera_endpoints
-    ADD CONSTRAINT camera_endpoints_pkey PRIMARY KEY (id);
 
 
 --
@@ -1381,14 +1003,6 @@ ALTER TABLE ONLY public.compares
 
 
 --
--- Name: licences licences_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.licences
-    ADD CONSTRAINT licences_pkey PRIMARY KEY (id);
-
-
---
 -- Name: meta_datas meta_datas_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1397,27 +1011,11 @@ ALTER TABLE ONLY public.meta_datas
 
 
 --
--- Name: motion_detections motion_detections_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.motion_detections
-    ADD CONSTRAINT motion_detections_pkey PRIMARY KEY (id);
-
-
---
 -- Name: access_tokens pk_access_tokens; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.access_tokens
     ADD CONSTRAINT pk_access_tokens PRIMARY KEY (id);
-
-
---
--- Name: clients pk_clients; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.clients
-    ADD CONSTRAINT pk_clients PRIMARY KEY (id);
 
 
 --
@@ -1450,14 +1048,6 @@ ALTER TABLE ONLY public.cameras
 
 ALTER TABLE ONLY public.users
     ADD CONSTRAINT pk_users PRIMARY KEY (id);
-
-
---
--- Name: users_old pk_users_old; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.users_old
-    ADD CONSTRAINT pk_users_old PRIMARY KEY (id);
 
 
 --
@@ -1525,14 +1115,6 @@ ALTER TABLE ONLY public.timelapses
 
 
 --
--- Name: webhooks webhooks_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.webhooks
-    ADD CONSTRAINT webhooks_pkey PRIMARY KEY (id);
-
-
---
 -- Name: access_rights_camera_id_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1558,13 +1140,6 @@ CREATE INDEX access_rights_token_id_index ON public.access_rights USING btree (t
 --
 
 CREATE UNIQUE INDEX camera_activities_camera_id_done_at_index ON public.camera_activities USING btree (camera_id, done_at);
-
-
---
--- Name: camera_endpoints_camera_id_scheme_host_port_index; Type: INDEX; Schema: public; Owner: -
---
-
-CREATE UNIQUE INDEX camera_endpoints_camera_id_scheme_host_port_index ON public.camera_endpoints USING btree (camera_id, scheme, host, port);
 
 
 --
@@ -1738,14 +1313,6 @@ ALTER TABLE ONLY public.compares
 
 
 --
--- Name: licences licences_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.licences
-    ADD CONSTRAINT licences_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
-
-
---
 -- Name: meta_datas meta_datas_camera_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1821,5 +1388,5 @@ ALTER TABLE ONLY public.timelapses
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829);
+INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829), (20190319122534);
 

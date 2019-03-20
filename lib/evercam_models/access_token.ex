@@ -6,7 +6,6 @@ defmodule AccessToken do
 
   schema "access_tokens" do
     belongs_to :user, User, foreign_key: :user_id
-    belongs_to :client, Client, foreign_key: :client_id
     belongs_to :grantor, User, foreign_key: :grantor_id
     has_many :rights, AccessRight, foreign_key: :token_id
 
