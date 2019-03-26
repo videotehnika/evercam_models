@@ -2,11 +2,12 @@ defmodule Camera do
   use Evercam.Schema
 
   @required_fields [:name, :owner_id, :config, :is_public, :is_online_email_owner_notification]
-  @optional_fields [:exid, :timezone, :thumbnail_url, :is_online, :offline_reason, :last_polled_at, :alert_emails, :last_online_at, :updated_at, :created_at, :model_id, :location, :mac_address, :discoverable]
+  @optional_fields [:exid, :timezone, :thumbnail_url, :is_online, :offline_reason, :last_polled_at, :alert_emails, :last_online_at, :updated_at, :created_at, :model_id, :location, :mac_address, :discoverable, :project_id]
 
   schema "cameras" do
     belongs_to :owner, User, foreign_key: :owner_id
     belongs_to :vendor_model, VendorModel, foreign_key: :model_id
+    belongs_to :projects, Project, foreign_key: :project_id
     has_many :access_rights, AccessRight
     has_many :shares, CameraShare
     has_one :cloud_recordings, CloudRecording
@@ -86,6 +87,7 @@ defmodule Camera do
     Camera
     |> where([cam], cam.owner_id == ^user.id)
     |> preload(:owner)
+    |> preload(:projects)
     |> preload(:cloud_recordings)
     |> preload(:timelapse_recordings)
     |> preload([vendor_model: :vendor])
@@ -98,6 +100,7 @@ defmodule Camera do
     |> where([cam, cs], cs.user_id == ^user.id)
     |> where([cam, cs], cam.id == cs.camera_id)
     |> preload(:owner)
+    |> preload(:projects)
     |> preload(:cloud_recordings)
     |> preload(:timelapse_recordings)
     |> preload([vendor_model: :vendor])
@@ -129,6 +132,7 @@ defmodule Camera do
     Camera
     |> where([cam], cam.exid == ^String.downcase(exid))
     |> preload(:owner)
+    |> preload(:projects)
     |> preload(:cloud_recordings)
     |> preload(:timelapse_recordings)
     |> preload([vendor_model: :vendor])

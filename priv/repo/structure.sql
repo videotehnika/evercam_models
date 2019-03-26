@@ -326,7 +326,8 @@ CREATE TABLE public.cameras (
     thumbnail_url text,
     is_online_email_owner_notification boolean DEFAULT false NOT NULL,
     alert_emails text,
-    offline_reason character varying(255)
+    offline_reason character varying(255),
+    project_id bigint
 );
 
 
@@ -454,6 +455,39 @@ CREATE SEQUENCE public.meta_datas_id_seq
 --
 
 ALTER SEQUENCE public.meta_datas_id_seq OWNED BY public.meta_datas.id;
+
+
+--
+-- Name: projects; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.projects (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    exid character varying(255) NOT NULL,
+    name character varying(255),
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.projects_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
 
 
 --
@@ -913,6 +947,13 @@ ALTER TABLE ONLY public.meta_datas ALTER COLUMN id SET DEFAULT nextval('public.m
 
 
 --
+-- Name: projects id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.projects ALTER COLUMN id SET DEFAULT nextval('public.projects_id_seq'::regclass);
+
+
+--
 -- Name: snapmail_cameras id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -1056,6 +1097,14 @@ ALTER TABLE ONLY public.users
 
 ALTER TABLE ONLY public.vendors
     ADD CONSTRAINT pk_vendors PRIMARY KEY (id);
+
+
+--
+-- Name: projects projects_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT projects_pkey PRIMARY KEY (id);
 
 
 --
@@ -1269,6 +1318,13 @@ CREATE INDEX ix_users_country_id ON public.users USING btree (country_id);
 
 
 --
+-- Name: project_exid_unique_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX project_exid_unique_index ON public.projects USING btree (exid);
+
+
+--
 -- Name: snapemail_camera_id_unique_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1294,6 +1350,14 @@ CREATE UNIQUE INDEX user_email_unique_index ON public.users USING btree (email);
 --
 
 CREATE UNIQUE INDEX user_username_unique_index ON public.users USING btree (username);
+
+
+--
+-- Name: cameras cameras_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.cameras
+    ADD CONSTRAINT cameras_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
 
 
 --
@@ -1326,6 +1390,14 @@ ALTER TABLE ONLY public.meta_datas
 
 ALTER TABLE ONLY public.meta_datas
     ADD CONSTRAINT meta_datas_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
+
+
+--
+-- Name: projects projects_user_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.projects
+    ADD CONSTRAINT projects_user_id_fkey FOREIGN KEY (user_id) REFERENCES public.users(id);
 
 
 --
@@ -1388,5 +1460,5 @@ ALTER TABLE ONLY public.timelapses
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829), (20190319122534);
+INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829), (20190319122534), (20190325065956), (20190325091759);
 
