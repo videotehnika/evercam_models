@@ -28,20 +28,6 @@ COMMENT ON EXTENSION plpgsql IS 'PL/pgSQL procedural language';
 
 
 --
--- Name: pg_stat_statements; Type: EXTENSION; Schema: -; Owner: -
---
-
-CREATE EXTENSION IF NOT EXISTS pg_stat_statements WITH SCHEMA public;
-
-
---
--- Name: EXTENSION pg_stat_statements; Type: COMMENT; Schema: -; Owner: -
---
-
-COMMENT ON EXTENSION pg_stat_statements IS 'track execution statistics of all SQL statements executed';
-
-
---
 -- Name: postgis; Type: EXTENSION; Schema: -; Owner: -
 --
 
@@ -365,6 +351,41 @@ ALTER SEQUENCE public.cloud_recordings_id_seq OWNED BY public.cloud_recordings.i
 
 
 --
+-- Name: companies; Type: TABLE; Schema: public; Owner: -
+--
+
+CREATE TABLE public.companies (
+    id bigint NOT NULL,
+    exid character varying(255) NOT NULL,
+    name character varying(255) NOT NULL,
+    website character varying(255),
+    size integer DEFAULT 0,
+    session_count integer DEFAULT 0,
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
+
+
+--
+-- Name: companies_id_seq; Type: SEQUENCE; Schema: public; Owner: -
+--
+
+CREATE SEQUENCE public.companies_id_seq
+    START WITH 1
+    INCREMENT BY 1
+    NO MINVALUE
+    NO MAXVALUE
+    CACHE 1;
+
+
+--
+-- Name: companies_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+--
+
+ALTER SEQUENCE public.companies_id_seq OWNED BY public.companies.id;
+
+
+--
 -- Name: compares_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -458,20 +479,6 @@ ALTER SEQUENCE public.meta_datas_id_seq OWNED BY public.meta_datas.id;
 
 
 --
--- Name: projects; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.projects (
-    id bigint NOT NULL,
-    user_id bigint NOT NULL,
-    exid character varying(255) NOT NULL,
-    name character varying(255),
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
-);
-
-
---
 -- Name: projects_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -484,10 +491,17 @@ CREATE SEQUENCE public.projects_id_seq
 
 
 --
--- Name: projects_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
+-- Name: projects; Type: TABLE; Schema: public; Owner: -
 --
 
-ALTER SEQUENCE public.projects_id_seq OWNED BY public.projects.id;
+CREATE TABLE public.projects (
+    id bigint DEFAULT nextval('public.projects_id_seq'::regclass) NOT NULL,
+    user_id bigint NOT NULL,
+    exid character varying(255) NOT NULL,
+    name character varying(255),
+    inserted_at timestamp(0) without time zone NOT NULL,
+    updated_at timestamp(0) without time zone NOT NULL
+);
 
 
 --
@@ -724,14 +738,14 @@ CREATE SEQUENCE public.sq_vendors
 --
 
 CREATE TABLE public.timelapse_recordings (
-    id bigint NOT NULL,
-    camera_id bigint NOT NULL,
+    id integer NOT NULL,
+    camera_id integer NOT NULL,
     frequency integer NOT NULL,
     storage_duration integer,
     schedule json,
     status character varying(255) NOT NULL,
-    inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    inserted_at timestamp without time zone NOT NULL,
+    updated_at timestamp without time zone NOT NULL
 );
 
 
@@ -840,7 +854,8 @@ CREATE TABLE public.users (
     last_sign_in_ip inet,
     telegram_username character varying(255),
     referral_url character varying(255),
-    linked_id character varying(255)
+    linked_id character varying(255),
+    company_id bigint
 );
 
 
@@ -854,6 +869,7 @@ CREATE TABLE public.vendor_models (
     updated_at timestamp with time zone DEFAULT now() NOT NULL,
     vendor_id integer NOT NULL,
     name text NOT NULL,
+    config json,
     exid text DEFAULT ''::text NOT NULL,
     jpg_url text DEFAULT ''::text NOT NULL,
     h264_url text DEFAULT ''::text,
@@ -941,17 +957,17 @@ ALTER TABLE ONLY public.cloud_recordings ALTER COLUMN id SET DEFAULT nextval('pu
 
 
 --
+-- Name: companies id; Type: DEFAULT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.companies ALTER COLUMN id SET DEFAULT nextval('public.companies_id_seq'::regclass);
+
+
+--
 -- Name: meta_datas id; Type: DEFAULT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.meta_datas ALTER COLUMN id SET DEFAULT nextval('public.meta_datas_id_seq'::regclass);
-
-
---
--- Name: projects id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.projects ALTER COLUMN id SET DEFAULT nextval('public.projects_id_seq'::regclass);
 
 
 --
@@ -1034,6 +1050,14 @@ ALTER TABLE ONLY public.camera_shares
 
 ALTER TABLE ONLY public.cloud_recordings
     ADD CONSTRAINT cloud_recordings_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: companies companies_pkey; Type: CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.companies
+    ADD CONSTRAINT companies_pkey PRIMARY KEY (id);
 
 
 --
@@ -1256,6 +1280,13 @@ CREATE UNIQUE INDEX cloud_recordings_camera_id_index ON public.cloud_recordings 
 
 
 --
+-- Name: companies_exid_unique_index; Type: INDEX; Schema: public; Owner: -
+--
+
+CREATE UNIQUE INDEX companies_exid_unique_index ON public.companies USING btree (exid);
+
+
+--
 -- Name: compare_exid_unique_index; Type: INDEX; Schema: public; Owner: -
 --
 
@@ -1354,14 +1385,6 @@ CREATE UNIQUE INDEX user_username_unique_index ON public.users USING btree (user
 
 
 --
--- Name: cameras cameras_project_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.cameras
-    ADD CONSTRAINT cameras_project_id_fkey FOREIGN KEY (project_id) REFERENCES public.projects(id);
-
-
---
 -- Name: compares compares_camera_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1434,14 +1457,6 @@ ALTER TABLE ONLY public.snapshot_extractors
 
 
 --
--- Name: timelapse_recordings timelapse_recordings_camera_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.timelapse_recordings
-    ADD CONSTRAINT timelapse_recordings_camera_id_fkey FOREIGN KEY (camera_id) REFERENCES public.cameras(id);
-
-
---
 -- Name: timelapses timelapses_camera_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -1458,8 +1473,16 @@ ALTER TABLE ONLY public.timelapses
 
 
 --
+-- Name: users users_company_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
+--
+
+ALTER TABLE ONLY public.users
+    ADD CONSTRAINT users_company_id_fkey FOREIGN KEY (company_id) REFERENCES public.companies(id);
+
+
+--
 -- PostgreSQL database dump complete
 --
 
-INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829), (20190319122534), (20190325065956), (20190325091759), (20190329113951);
+INSERT INTO public."schema_migrations" (version) VALUES (20150622102645), (20150629144629), (20150629183319), (20160616160229), (20160712101523), (20160720125939), (20160727112052), (20160830055709), (20161202114834), (20161202115000), (20161213162000), (20161219130300), (20161221070146), (20161221070226), (20170103162400), (20170112110000), (20170213140200), (20170222114100), (20170414141100), (20170419105000), (20171009070501), (20171213120725), (20171220062816), (20171222101825), (20180102124912), (20180122051210), (20180130103936), (20180411104000), (20180416121600), (20180420054301), (20180502103548), (20180807101800), (20180903164300), (20181015164800), (20181026105300), (20181212064300), (20190222055829), (20190319122534), (20190325065956), (20190325091759), (20190329113951), (20190408055219), (20190408065515);
 

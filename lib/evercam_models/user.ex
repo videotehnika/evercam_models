@@ -5,10 +5,11 @@ defmodule User do
   @name_regex ~r/^[\p{Xwd}\s,.']+$/
 
   @required_fields [:password, :firstname, :lastname, :email]
-  @optional_fields [:username, :telegram_username, :referral_url, :api_id, :api_key, :reset_token, :token_expires_at, :payment_method, :country_id, :confirmed_at, :updated_at, :last_login_at, :created_at, :is_admin]
+  @optional_fields [:username, :telegram_username, :referral_url, :api_id, :api_key, :reset_token, :token_expires_at, :payment_method, :company_id, :country_id, :confirmed_at, :updated_at, :last_login_at, :created_at, :is_admin]
 
   schema "users" do
     belongs_to :country, Country, foreign_key: :country_id
+    belongs_to :companies, Company, foreign_key: :company_id
     has_many :cameras, Camera, foreign_key: :owner_id
     has_many :camera_shares, CameraShare
     has_one :access_tokens, AccessToken
@@ -65,6 +66,7 @@ defmodule User do
     User
     |> where([u], fragment("lower(?)", u.username) == ^login or fragment("lower(?)", u.email) == ^login)
     |> preload(:country)
+    |> preload(:companies)
     |> Repo.one
   end
 
@@ -81,6 +83,7 @@ defmodule User do
     User
     |> where(username: ^String.downcase(username))
     |> preload(:country)
+    |> preload(:companies)
     |> Repo.one
   end
 
@@ -90,6 +93,17 @@ defmodule User do
     |> where(api_key: ^api_key)
     # |> preload(:access_tokens)
     |> Repo.one
+  end
+
+  def by_email_domain(domain) do
+    User
+    |> where([u], like(u.email, ^"%@#{domain}"))
+    |> Repo.all
+  end
+
+  def link_company(user, company_id) do
+    User.update_changeset(user, %{company_id: company_id})
+    |> Repo.update
   end
 
   def with_access_to(camera_full) do
@@ -150,6 +164,10 @@ defmodule User do
         |> put_change(:username, get_field(changeset, :email))
         |> update_change(:username, &String.downcase/1)
     end
+  end
+
+  def update_changeset(user, params \\ :invalid) do
+    user |> cast(params, @required_fields ++ @optional_fields)
   end
 
   def changeset(model, params \\ :invalid) do
