@@ -8,6 +8,7 @@ defmodule Evercam.Repo.Migrations.CreateCompaniesTable do
       add :website, :string
       add :size, :integer, default: 0
       add :session_count, :integer, default: 0
+      add :linked_url, :text
 
       timestamps()
     end

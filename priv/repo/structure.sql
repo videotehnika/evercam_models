@@ -362,7 +362,8 @@ CREATE TABLE public.companies (
     size integer DEFAULT 0,
     session_count integer DEFAULT 0,
     inserted_at timestamp(0) without time zone NOT NULL,
-    updated_at timestamp(0) without time zone NOT NULL
+    updated_at timestamp(0) without time zone NOT NULL,
+    linked_url text
 );
 
 
