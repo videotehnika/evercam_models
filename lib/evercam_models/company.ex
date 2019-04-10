@@ -2,7 +2,7 @@ defmodule Company do
   use Evercam.Schema
 
   @required_fields [:exid, :name]
-  @optional_fields [:website, :linked_url, :size, :session_count, :updated_at, :inserted_at]
+  @optional_fields [:website, :linkedin_url, :size, :session_count, :updated_at, :inserted_at]
 
   schema "companies" do
     has_many :users, User, foreign_key: :company_id
@@ -12,7 +12,7 @@ defmodule Company do
     field :website, :string
     field :size, :integer
     field :session_count, :integer
-    field :linked_url, :string
+    field :linkedin_url, :string
   
     timestamps(type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
   end

@@ -363,7 +363,7 @@ CREATE TABLE public.companies (
     session_count integer DEFAULT 0,
     inserted_at timestamp(0) without time zone NOT NULL,
     updated_at timestamp(0) without time zone NOT NULL,
-    linked_url text
+    linkedin_url text
 );
 
 
