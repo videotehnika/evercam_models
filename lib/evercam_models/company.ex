@@ -17,6 +17,12 @@ defmodule Company do
     timestamps(type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
   end
 
+  def all do
+    Company
+    |> preload(:users)
+    |> Repo.all
+  end
+
   def by_exid(id) do
     Company
     |> where(exid: ^String.downcase(id))
