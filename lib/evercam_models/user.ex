@@ -33,9 +33,14 @@ defmodule User do
     field :sign_in_count, :integer
     field :is_admin, :boolean
     field :last_sign_in_ip, EctoFields.IPv4
-    field :linkedin_url :string
-    field :twitter_url :string
+    field :linkedin_url, :string
+    field :twitter_url, :string
     timestamps(inserted_at: :created_at, type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
+  end
+
+  def all do
+    User
+    |> Repo.all
   end
 
   def invalidate_auth(api_id, api_key) do
