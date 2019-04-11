@@ -5,7 +5,7 @@ defmodule User do
   @name_regex ~r/^[\p{Xwd}\s,.']+$/
 
   @required_fields [:password, :firstname, :lastname, :email]
-  @optional_fields [:username, :telegram_username, :referral_url, :api_id, :api_key, :reset_token, :token_expires_at, :payment_method, :company_id, :country_id, :confirmed_at, :updated_at, :last_login_at, :created_at, :is_admin]
+  @optional_fields [:linkedin_url, :twitter_url, :username, :telegram_username, :referral_url, :api_id, :api_key, :reset_token, :token_expires_at, :payment_method, :company_id, :country_id, :confirmed_at, :updated_at, :last_login_at, :created_at, :is_admin]
 
   schema "users" do
     belongs_to :country, Country, foreign_key: :country_id
@@ -33,6 +33,8 @@ defmodule User do
     field :sign_in_count, :integer
     field :is_admin, :boolean
     field :last_sign_in_ip, EctoFields.IPv4
+    field :linkedin_url :string
+    field :twitter_url :string
     timestamps(inserted_at: :created_at, type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
   end
 
@@ -164,6 +166,11 @@ defmodule User do
         |> put_change(:username, get_field(changeset, :email))
         |> update_change(:username, &String.downcase/1)
     end
+  end
+
+  def update_user(user, params) do
+    User.update_changeset(user, params)
+    |> Repo.update
   end
 
   def update_changeset(user, params \\ :invalid) do
