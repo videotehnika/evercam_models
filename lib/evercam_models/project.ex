@@ -6,7 +6,7 @@ defmodule Project do
 
   schema "projects" do
     belongs_to :user, User, foreign_key: :user_id
-    has_many :camera, Camera
+    has_many :cameras, Camera
 
     field :name, :string
     field :exid, :string
@@ -24,7 +24,7 @@ defmodule Project do
     Project
     |> where(exid: ^exid)
     |> preload(:user)
-    |> Repo.all
+    |> Repo.one
   end
 
   def delete_by_exid(exid) do
