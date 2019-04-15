@@ -1,8 +1,8 @@
 defmodule Project do
   use Evercam.Schema
 
-  @required_fields [:name, :exid, :user_id]
-  @optional_fields [:updated_at, :inserted_at]
+  @required_fields [:name, :user_id]
+  @optional_fields [ :exid, :updated_at, :inserted_at]
 
   schema "projects" do
     belongs_to :user, User, foreign_key: :user_id
@@ -33,9 +33,33 @@ defmodule Project do
     |> Repo.delete_all
   end
 
+  defp validate_exid(changeset) do
+    case get_field(changeset, :exid) do
+      nil -> auto_generate_camera_id(changeset)
+      _exid -> changeset |> update_change(:exid, &String.downcase/1)
+    end
+  end
+
+  defp auto_generate_camera_id(changeset) do
+    case get_field(changeset, :name) do
+      nil ->
+        changeset
+      subject ->
+        project_id =
+          subject
+          |> Util.slugify
+          |> String.replace(" ", "")
+          |> String.replace("-", "")
+          |> String.downcase
+          |> String.slice(0..4)
+        put_change(changeset, :exid, "#{project_id}-#{Enum.take_random(?a..?z, 5)}")
+    end
+  end
+
   def changeset(model, params \\ :invalid) do
     model
     |> cast(params, @required_fields ++ @optional_fields)
     |> validate_required(@required_fields)
+    |> validate_exid
   end
 end
