@@ -39,6 +39,14 @@ defmodule Camera do
     |> Repo.all
   end
 
+  def get_offline_cr_status_off_cameras() do
+    Repo.all(from c in Camera,
+        join: cr in assoc(c, :cloud_recordings),
+        where: c.is_online == false,
+        where: cr.status == "off",
+        select: c)
+  end
+
   def get_timelapse_recording_cameras() do
     Camera
     |> join(:inner, [c], tr in TimelapseRecording, on: tr.camera_id == c.id)
