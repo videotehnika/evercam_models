@@ -29,6 +29,14 @@ defmodule Compare do
     |> Repo.all
   end
 
+  def requested_by(user_id) do
+    Compare
+    |> where(requested_by: ^user_id)
+    |> preload(:camera)
+    |> preload(:user)
+    |> Repo.all
+  end
+
   def by_exid(exid) do
     Compare
     |> where(exid: ^String.downcase(exid))

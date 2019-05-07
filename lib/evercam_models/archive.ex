@@ -57,6 +57,12 @@ defmodule Archive do
     |> where(camera_id: ^camera_id)
   end
 
+  def requested_by(user_id) do
+    Archive
+    |> where(requested_by: ^user_id)
+    |> get_all_with_associations
+  end
+
   def with_status_if_given(query, nil), do: query
   def with_status_if_given(query, status) do
     query
