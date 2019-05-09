@@ -2,7 +2,7 @@ defmodule Camera do
   use Evercam.Schema
 
   @required_fields [:name, :owner_id, :config, :is_public, :is_online_email_owner_notification]
-  @optional_fields [:exid, :timezone, :thumbnail_url, :is_online, :offline_reason, :last_polled_at, :alert_emails, :last_online_at, :updated_at, :created_at, :model_id, :location, :mac_address, :discoverable, :project_id]
+  @optional_fields [:exid, :timezone, :thumbnail_url, :is_online, :offline_reason, :last_polled_at, :alert_emails, :last_online_at, :updated_at, :created_at, :model_id, :location, :location_detailed, :mac_address, :discoverable, :project_id]
 
   schema "cameras" do
     belongs_to :owner, User, foreign_key: :owner_id
@@ -26,6 +26,7 @@ defmodule Camera do
     field :config, Evercam.Types.JSON
     field :mac_address, Evercam.Types.MACADDR
     field :location, Geo.PostGIS.Geometry
+    field :location_detailed, Evercam.Types.JSON
     field :last_polled_at, :utc_datetime_usec, default: Calendar.DateTime.now_utc
     field :last_online_at, :utc_datetime_usec, default: Calendar.DateTime.now_utc
     timestamps(inserted_at: :created_at, type: :utc_datetime_usec, default: Calendar.DateTime.now_utc)
