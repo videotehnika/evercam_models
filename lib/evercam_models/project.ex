@@ -7,6 +7,7 @@ defmodule Project do
   schema "projects" do
     belongs_to :user, User, foreign_key: :user_id
     has_many :cameras, Camera
+    has_many :overlays, Overlay
 
     field :name, :string
     field :exid, :string
@@ -17,6 +18,7 @@ defmodule Project do
     Project
     |> where(user_id: ^user_id)
     |> preload(:user)
+    |> preload(:overlays)
     |> Repo.all
   end
 
@@ -24,6 +26,7 @@ defmodule Project do
     Project
     |> where(exid: ^exid)
     |> preload(:user)
+    |> preload(:overlays)
     |> Repo.one
   end
 
